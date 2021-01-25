@@ -1,0 +1,100 @@
+<?xml version='1.0'?>
+
+<robot name="cylinder_2wheel_base" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="chassis_length" value="0.06"/>
+  <xacro:property name="chassis_radius" value="0.2"/>
+  <xacro:property name="wheel_length" value="0.04"/>
+  <xacro:property name="wheel_radius" value="0.07"/>
+
+  <xacro:include filename="$(find urdf_dev)/macros.xacro"/>
+  <xacro:include filename="$(find urdf_dev)/cylinder_2wheel_base/cylinder_2wheel_base.gazebo"/>
+
+  <!-- prefix:left reflect:-1 -->
+  <xacro:macro name="wheel" params="prefix reflect">
+    <link name="${prefix}_wheel">
+      <visual>
+        <geometry>
+          <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+        </geometry>
+        <!-- relative to joint frame -->
+        <origin xyz="0 ${reflect*wheel_length/2} 0" rpy="1.5707 0 0"/>
+        <material name="white"/>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+        </geometry>
+        <origin xyz="0 ${reflect*wheel_length/2} 0" rpy="1.5707 0 0"/>
+      </collision>
+      <xacro:cylinder_inertial m="${3.14*wheel_radius*wheel_radius*wheel_length}" r="${wheel_radius}" l="${wheel_length}">
+        <origin xyz="0 ${reflect*wheel_length/2} 0" rpy="1.5707 0 0"/>
+      </xacro:cylinder_inertial>
+    </link>
+
+    <joint name="chassis_${prefix}_joint" type="continuous">
+      <parent link="chassis"/>
+      <child link="${prefix}_wheel"/>
+      <origin xyz="0 ${reflect*chassis_radius} ${wheel_radius}"/>
+      <axis xyz="0 1 0" rpy="0 0 0"/>
+      <!--limit effort="10000" velocity="1000"/-->
+      <!--joint_properties damping="1.0" friction="1.0"/-->
+    </joint>
+  </xacro:macro>
+
+  <!-- reflect:-1(back) -->
+  <xacro:macro name="caster" params="reflect">
+    <visual>
+      <geometry>
+        <sphere radius="${(wheel_radius-chassis_length/2)/2}"/>
+      </geometry>
+      <origin xyz="${reflect*chassis_radius/1.33} 0 ${(wheel_radius-chassis_length/2)/2}" rpy="0 0 0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="${wheel_radius/2}"/>
+      </geometry>
+      <origin xyz="${reflect*chassis_radius/1.33} 0 ${(wheel_radius-chassis_length/2)/2}" rpy="0 0 0"/>
+      <surface>
+        <friction>
+          <ode>
+            <mu>0</mu>
+            <mu2>0</mu2>
+            <slip1>1.0</slip1>
+            <slip2>1.0</slip2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+    <!-- 0.523599 ~= pi * 4/3 / 8 -->
+    <xacro:sphere_inertial m="${0.523599*wheel_radius*wheel_radius*wheel_radius}" r="${wheel_radius/2}">
+      <origin xyz="${reflect*chassis_radius/1.33} 0 ${(wheel_radius-chassis_length/2)/2}" rpy="0 0 0"/>
+    </xacro:sphere_inertial>
+  </xacro:macro>
+
+  <link name="chassis">
+    <visual>
+      <geometry>
+        <cylinder length="${chassis_length}" radius="${chassis_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${chassis_length}" radius="${chassis_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+    </collision>
+    <xacro:cylinder_inertial m="${3.14*chassis_radius*chassis_radius*chassis_length}" r="${chassis_radius}" l="${chassis_length}">
+      <origin xyz="0 0 ${wheel_radius}" rpy="0 0 0"/>
+    </xacro:cylinder_inertial>
+
+    <xacro:caster reflect="-1"/>
+    <xacro:caster reflect="1"/>
+  </link>
+
+  <xacro:wheel prefix="left" reflect="-1"/>
+  <xacro:wheel prefix="right" reflect="1"/>
+
+</robot>

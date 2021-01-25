@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<robot>
+
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="arm_link1">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo reference="arm_link2">
+    <material>Gazebo/Orange</material>
+  </gazebo>
+
+  <gazebo reference="arm_link3">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <transmission name="arm_base_zaxis_transmission">
+    <type> transmission_interface/SimpleTransmission</type>
+    <joint name="arm_base_zaxis_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="arm_base_zaxis_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <transmission name="arm_base_yaxis_transmission">
+    <type> transmission_interface/SimpleTransmission</type>
+    <joint name="arm_base_yaxis_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="arm_base_yaxis_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <transmission name="arm_base_xaxis_transmission">
+    <type> transmission_interface/SimpleTransmission</type>
+    <joint name="arm_base_xaxis_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="arm_base_xaxis_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <transmission name="link1_link2_transmission">
+    <type> transmission_interface/SimpleTransmission</type>
+    <joint name="link1_link2_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="link1_link2_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <transmission name="link2_link3_transmission">
+    <type> transmission_interface/SimpleTransmission</type>
+    <joint name="link2_link3_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="link2_link3_actuator">
+      <mechanicalReduction>7</mechanicalReduction>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+  <!-- <transmission name="gripper_extension_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <actuator name="gripper_extension_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+    <joint name="gripper_extension">
+      <hardwareInterface>PositionJointInterface</hardwareInterface>
+    </joint>
+  </transmission> -->
+
+</robot>

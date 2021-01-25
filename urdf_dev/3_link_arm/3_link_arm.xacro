@@ -1,0 +1,150 @@
+<?xml version='1.0'?>
+
+<robot name="3_link_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="arm_link_length" value="0.1"/>
+  <xacro:property name="arm_link_radius" value="0.02"/>
+
+  <xacro:include filename="$(find urdf_dev)/macros.xacro"/>
+  <xacro:include filename="$(find urdf_dev)/3_link_arm.gazebo"/>
+
+  <!-- give a name to prevent link/joint names overlapping -->
+  <xacro:macro name="3DOF_joint" params="name parent child *origin">
+    <joint name="${name}_fixed_joint" type="fixed">
+        <xacro:insert_block name="origin"/>
+        <parent link="${parent}"/>
+        <child link="${name}_linker1"/>
+    </joint>
+    <link name="${name}_linker1">
+      <!-- give small inertial so gazebo doesn't ignore -->
+      <inertial>
+        <mass value="0.001"/>
+        <inertia ixx="2e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="2e-4"/>
+      </inertial>
+    </link>
+    <joint name="${name}_zaxis_joint" type="revolute" >
+        <parent link="${name}_linker1"/>
+        <child link="${name}_linker2"/>
+        <axis xyz="0 0 1" />
+        <limit lower="-1.570795" upper="1.570795" />
+    </joint>
+    <link name="${name}_linker2">
+      <inertial>
+        <mass value="0.001"/>
+        <inertia ixx="2e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="2e-4"/>
+      </inertial>
+    </link>
+    <joint name="${name}_yaxis_joint" type="revolute" >
+        <parent link="${name}_linker2"/>
+        <child link="${name}_linker3"/>
+        <axis xyz="0 1 0" />
+        <limit lower="-1.570795" upper="1.570795" />
+    </joint>
+    <link name="${name}_linker3">
+      <inertial>
+        <mass value="0.001"/>
+        <inertia ixx="2e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="2e-4"/>
+      </inertial>
+    </link>
+    <joint name="${name}_xaxis_joint" type="revolute" >
+        <parent link="${name}_linker3"/>
+        <child link="${child}"/>
+        <axis xyz="1 0 0" />
+        <limit lower="-1.570795" upper="1.570795" />
+    </joint>
+  </xacro:macro>
+
+  <link name="base_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="2e-4" ixy="0" ixz="0" iyy="2e-4" iyz="0" izz="2e-4"/>
+    </inertial>
+  </link>
+
+  <link name="arm_link1">
+    <visual>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </collision>
+    <xacro:cylinder_inertial m="${3.14*arm_link_radius*arm_link_radius*arm_link_length}" r="${arm_link_radius}" l="${arm_link_length}">
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </xacro:cylinder_inertial>
+  </link>
+
+  <xacro:3DOF_joint name="arm_base" parent="base_link" child="arm_link1">
+    <origin xyz="0 0 ${chassis_length/2}" rpy="0 0 0"/>
+  </xacro:3DOF_joint>
+
+  <link name="arm_link2">
+    <visual>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </collision>
+    <xacro:cylinder_inertial m="${3.14*arm_link_radius*arm_link_radius*arm_link_length}" r="${arm_link_radius}" l="${arm_link_length}">
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </xacro:cylinder_inertial>
+  </link>
+
+  <joint name="link1_link2_joint" type="revolute" >
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+      <parent link="arm_link1"/>
+      <child link="arm_link1"/>
+      <axis xyz="1 0 0" />
+      <limit lower="-1.570795" upper="1.570795" />
+  </joint>
+
+  <link name="arm_link3">
+    <visual>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+      <material name="white"/>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder length="${arm_link_length}" radius="${arm_link_radius}"/>
+      </geometry>
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </collision>
+    <xacro:cylinder_inertial m="${3.14*arm_link_radius*arm_link_radius*arm_link_length}" r="${arm_link_radius}" l="${arm_link_length}">
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+    </xacro:cylinder_inertial>
+  </link>
+
+  <joint name="link2_link3_joint" type="revolute" >
+      <origin xyz="0 0 ${arm_link_length/2}" rpy="0 0 0"/>
+      <parent link="arm_link2"/>
+      <child link="arm_link3"/>
+      <axis xyz="0 1 0" />
+      <limit lower="-1.570795" upper="1.570795" />
+  </joint>
+
+  <!-- <joint name="gripper_extension" type="prismatic">
+    <parent link="base_link"/>
+    <child link="gripper_pole"/>
+    <limit effort="1000.0" lower="-${width*2-.02}" upper="0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="${width-.01} 0 0.2"/>
+    <limit effort="30" velocity="0.2"/>
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint> -->
+
+</robot>

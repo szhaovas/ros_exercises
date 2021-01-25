@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find urdf_dev)/cylinder_2wheel_base/cylinder_2wheel_base.xacro"/>
+  <arg name="world" default="worlds/empty_world.world"/>
+  <arg name="rviz_config" default="$(find urdf_dev)/test.rviz"/>
+  <arg name="use_jsp" default="false"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)"/>
+
+  <!-- controller -->
+  <rosparam file="$(find urdf_dev)/cylinder_2wheel_base/cylinder_2wheel_base.yaml" command="load"/>
+  <node name="controller_manager" pkg="controller_manager" type="spawner"
+    respawn="false" output="screen" args="joint_state_controller left_velocity_controller right_velocity_controller"/>
+
+  <node if="$(arg use_jsp)" name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)"/>
+
+  <!-- world and robot -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+  </include>
+  <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+    args="-z 1.0 -urdf -param robot_description -model robot"/>
+</launch>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="model" default="$(find urdf_dev)/monoped/monoped.urdf"/>
+  <arg name="world" default="$(find urdf_dev)/monoped/low_gravity.world"/>
+  <arg name="rviz_config" default="$(find urdf_dev)/test.rviz"/>
+
+  <param name="robot_description" command="cat $(arg model)"/>
+
+  <rosparam file="$(find urdf_dev)/monoped/monoped.yaml" command="load"/>
+
+  <node name="robot_state_publisher_monoped" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <param name="publish_frequency" type="double" value="30.0" />
+    <param name="ignore_timestamp" type="bool" value="true" />
+    <param name="tf_prefix" type="string" value="monoped" />
+    <remap from="/joint_states" to="/monoped/joint_states" />
+  </node>
+
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" args="--namespace=/monoped
+                          joint_state_controller
+                          haa_joint_position_controller
+                          hfe_joint_position_controller
+                          kfe_joint_position_controller
+                          --shutdown-timeout 3">
+  </node>
+
+  <rosparam command="load" file="$(find urdf_dev)/monoped/qlearn_params.yaml" />
+  <node pkg="my_hopper_training" name="monoped_gym" type="start_training_v2.py" output="screen"/>
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher"/>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)"/>
+
+  <!-- world and robot -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(arg world)"/>
+  </include>
+  <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
+    args="-urdf -z 1.0 -param robot_description -model robot"/>
+</launch>

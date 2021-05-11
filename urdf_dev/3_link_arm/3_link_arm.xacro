@@ -6,10 +6,10 @@
   <xacro:property name="arm_link_radius" value="0.02"/>
 
   <xacro:include filename="$(find urdf_dev)/macros.xacro"/>
-  <xacro:include filename="$(find urdf_dev)/3_link_arm.gazebo"/>
+  <xacro:include filename="$(find urdf_dev)/3_link_arm/3_link_arm.gazebo"/>
 
   <!-- give a name to prevent link/joint names overlapping -->
-  <xacro:macro name="3DOF_joint" params="name parent child *origin">
+  <xacro:macro name="ball_joint" params="name parent child *origin">
     <joint name="${name}_fixed_joint" type="fixed">
         <xacro:insert_block name="origin"/>
         <parent link="${parent}"/>
@@ -80,9 +80,9 @@
     </xacro:cylinder_inertial>
   </link>
 
-  <xacro:3DOF_joint name="arm_base" parent="base_link" child="arm_link1">
-    <origin xyz="0 0 ${chassis_length/2}" rpy="0 0 0"/>
-  </xacro:3DOF_joint>
+  <xacro:ball_joint name="arm_base" parent="base_link" child="arm_link1">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ball_joint>
 
   <link name="arm_link2">
     <visual>
